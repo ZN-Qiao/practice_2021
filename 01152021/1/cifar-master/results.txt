@@ -1,0 +1,53 @@
+old_resnet50: 99.972	77.83
+ac_resnet50:  99.968	77.35
+
+
+
+
+GUO SERVER:
+old_resnet50: 		99.782	79.4
+ac_resnet50:		99.78	79.38
+double_resnet50:	99.78	79.42
+ass1_resnet50:		99.764	79.33
+ass2_resnet50:		99.778	79.26
+ass3_resnet50:		99.78	79.42
+ass4_resnet50:		99.77	79.39
+ass5_resnet50:		99.81	79.63
+
+
+
+GCP resnet18 seed=1:
+old: 	99.944	78.52
+ac:	99.94	78.21
+ass4:	99.936	77.97
+ass5:	99.936	77.61
+ass6: 	99.924	77.85
+ass7: 	99.898	77.12
+ass8: 	99.93	78.5
+ass9:	99.948	77.81
+double: 99.936	77.78
+
+
+GCP resnet18 seed=42 new normalization
+old:	99.946	78.4
+ac: 	99.942	78.18
+double:	99.942	78.27
+ass1:	99.942	78.14
+ass2:	99.934	78.24
+ass3:	99.94	78.66
+ass4:	99.94	77.96
+ass5:	99.944	78.14
+ass6:	99.93	78.06
+ass7:	99.904	77.17
+ass8:	99.942	77.83
+ass9:	99.934	77.99
+triple:	99.926	77.21
+
+
+
+
+
+
+1. OHEM
+2. Metric Learning
+3. Long tail Distribution

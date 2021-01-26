@@ -1,0 +1,16 @@
+Idea1 cifar10 squeezenet lr 0.1 step 30 epoch 50 Adam
+
+Idea1    Relu
+87.950   86.610
+88.47    87.47
+88.390   87.180
+88.440   87.650
+87.850   86.960
+           
+Mish
+88.430
+86.380
+
+
+Idea 2 cifar10 resnet50 lr 0.1 step 30 epoch 50 SGD
+91.180 92.200

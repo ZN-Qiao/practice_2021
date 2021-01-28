@@ -16,6 +16,8 @@ import torchvision.transforms as transforms
 
 import os
 import argparse
+import random
+import numpy as np
 
 #from models import *
 import models as models
@@ -48,6 +50,10 @@ print(device)
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
+seed_num = 1
+random.seed(seed_num)
+np.random.seed(seed_num)
+torch.manual_seed(seed_num)
 
 # Data
 print('==> Preparing data..')
@@ -171,8 +177,8 @@ def test(epoch):
             'acc': acc,
             'epoch': epoch,
         }
-        save_path = './checkpoint/cifar'+str(args.cifar)+"/"+args.netName+"/"+str(args.weight)+"_model_best.t7"
-        torch.save(state, save_path)
+        # save_path = './checkpoint/cifar'+str(args.cifar)+"/"+args.netName+"/"+str(args.weight)+"_model_best.t7"
+        # torch.save(state, save_path)
         best_acc = acc
 
     return [(test_loss / (batch_idx + 1)), (100. * correct / total)]

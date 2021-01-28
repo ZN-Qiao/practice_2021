@@ -16,8 +16,6 @@ import torchvision.transforms as transforms
 
 import os
 import argparse
-import random
-import numpy as np
 
 #from models import *
 import models as models
@@ -50,10 +48,6 @@ print(device)
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
-seed_num = 1
-random.seed(seed_num)
-np.random.seed(seed_num)
-torch.manual_seed(seed_num)
 
 # Data
 print('==> Preparing data..')

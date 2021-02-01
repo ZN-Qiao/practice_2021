@@ -8,6 +8,8 @@ from torch.autograd import Variable
 from collections import OrderedDict
 import math
 
+
+
 __all__ = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
 
 
@@ -46,6 +48,7 @@ class BasicBlock(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
+        # print(self.weight)
         out = out * self.weight + out.data * (1 - self.weight)
 
         if self.downsample is not None:
@@ -86,6 +89,7 @@ class Bottleneck(nn.Module):
         out = self.conv3(out)
         out = self.bn3(out)
 
+        print(self.weight)
         out = out * self.weight + out.data * (1 - self.weight)
 
         if self.downsample is not None:
@@ -99,10 +103,13 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, weight, layers, num_classes=10, zero_init_residual=False):
+    def __init__(self, block, prob_0_L, layers, num_classes=10, zero_init_residual=False):
         super(ResNet, self).__init__()
         self.inplanes = 64
-        self.weight= weight
+
+        self.prob_now = prob_0_L[0]
+        self.prob_delta = prob_0_L[0] - prob_0_L[1]
+        self.prob_step = self.prob_delta / (sum(layers) - 1)
 
         # For ImageNet
         # self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
@@ -148,10 +155,12 @@ class ResNet(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.weight, self.inplanes, planes, stride, downsample))
+        layers.append(block(self.prob_now, self.inplanes, planes, stride, downsample))
+        self.prob_now = self.prob_now - self.prob_step
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            layers.append(block(self.weight, self.inplanes, planes))
+            layers.append(block(self.prob_now, self.inplanes, planes))
+            self.prob_now = self.prob_now - self.prob_step
 
         return nn.Sequential(*layers)
 
@@ -177,7 +186,7 @@ class ResNet(nn.Module):
         return x
 
 
-def resnet18(pretrained=False, weight=1.0, **kwargs):
+def resnet18(pretrained=False, weight=[1, 0.5], **kwargs):
     """Constructs a ResNet-18 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -186,7 +195,7 @@ def resnet18(pretrained=False, weight=1.0, **kwargs):
     return model
 
 
-def resnet34(pretrained=False, weight=1.0, **kwargs):
+def resnet34(pretrained=False, weight=[1, 0.5], **kwargs):
     """Constructs a ResNet-34 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -195,7 +204,7 @@ def resnet34(pretrained=False, weight=1.0, **kwargs):
     return model
 
 
-def resnet50(pretrained=False, weight=1.0, **kwargs):
+def resnet50(pretrained=False, weight=[1, 0.5], **kwargs):
     """Constructs a ResNet-50 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -204,7 +213,7 @@ def resnet50(pretrained=False, weight=1.0, **kwargs):
     return model
 
 
-def resnet101(pretrained=False, weight=1.0, **kwargs):
+def resnet101(pretrained=False, weight=[1, 0.5], **kwargs):
     """Constructs a ResNet-101 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -213,7 +222,7 @@ def resnet101(pretrained=False, weight=1.0, **kwargs):
     return model
 
 
-def resnet152(pretrained=False, weight=1.0, **kwargs):
+def resnet152(pretrained=False, weight=[1, 0.5], **kwargs):
     """Constructs a ResNet-152 model.
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
@@ -223,7 +232,7 @@ def resnet152(pretrained=False, weight=1.0, **kwargs):
 
 
 def demo():
-    net = resnet50(num_classes=10, weight=0.6)
+    net = resnet101(num_classes=10, weight=[1, 0.5])
     y = net(torch.randn(2,3,32,32))
     print(y.size())
 

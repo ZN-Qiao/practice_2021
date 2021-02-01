@@ -44,7 +44,7 @@ class StoDepth_BasicBlock(nn.Module):
     def forward(self, x):
 
         identity = x.clone()
-
+        print(self.prob)
         if torch.equal(self.m.sample(), torch.ones(1)):
 
             self.conv1.weight.requires_grad = True
@@ -176,12 +176,12 @@ class ResNet_StoDepth_lineardecay(nn.Module):
             )
 
         layers = []
-        print(self.prob_now)
+        # print(self.prob_now)
         layers.append(block(self.prob_now, self.inplanes, planes, stride, downsample))
         self.prob_now = self.prob_now - self.prob_step
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            print(self.prob_now)
+            # print(self.prob_now)
             layers.append(block(self.prob_now, self.inplanes, planes))
             self.prob_now = self.prob_now - self.prob_step
 

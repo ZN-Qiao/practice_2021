@@ -1,0 +1,1 @@
+Epoch	Train loss	Test loss	Train Acc	Test Acc

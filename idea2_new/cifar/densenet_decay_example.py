@@ -36,7 +36,7 @@ class _DenseLayer(nn.Sequential):
         new_features = super(_DenseLayer, self).forward(x)
 
         new_features = self.prob * new_features + (1-self.prob) * new_features.data
-
+        # print(self.prob)
         if self.drop_rate > 0:
             new_features = F.dropout(new_features, p=self.drop_rate, training=self.training)
         return torch.cat([x, new_features], 1)
@@ -236,5 +236,10 @@ def densenet161(pretrained=False, **kwargs):
         model.load_state_dict(state_dict)
     return model
 
+def test():
+    net = densenet121_bp_decay(pretrained=False, probs=[1.,0.5])
+    x = torch.randn(1,3,256,256)
+    y = net(x)
+    print(y.shape)
 
-densenet121_bp_decay(pretrained=False, probs=[1.,0.5])
+# test()

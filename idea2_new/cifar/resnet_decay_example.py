@@ -114,6 +114,7 @@ class StoDepth_Bottleneck(nn.Module):
         out = self.bn3(out)
 
         weight = self.prob
+        # print(weight)
         # import pdb; pdb.set_trace()
         out = weight * out + (1 - weight) * out.data
         # out = weight * out
@@ -261,7 +262,7 @@ def resnet152_StoDepth_lineardecay(pretrained=False, prob_0_L=[1, 0.5], **kwargs
 
 def demo():
     net = resnet50_bp_decay(prob_0_L=[1, 0.5])
-    y = net(torch.randn(2,3,32,32))
+    y = net(torch.randn(2,3,256,256))
     print(y.size())
 
 # demo()

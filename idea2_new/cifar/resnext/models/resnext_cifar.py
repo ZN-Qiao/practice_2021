@@ -99,4 +99,3 @@ def test_resnext():
     print(y.size())
 
 # test_resnext()
-# python3 cifar.py --netName=ResNeXt29_4x64d --bs=128 --cifar=10 --weight=0.5

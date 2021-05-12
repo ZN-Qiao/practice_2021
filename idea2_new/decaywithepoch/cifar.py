@@ -42,8 +42,8 @@ parser.add_argument('--weight', default=0.5, type=float, help='weight')
 
 args = parser.parse_args()
 
-if not os.path.isdir('checkpoint/cifar'+str(args.cifar)+"_normal/"+args.netName):
-    os.makedirs('checkpoint/cifar'+str(args.cifar)+"_normal/"+args.netName)
+if not os.path.isdir('checkpoint/cifar'+str(args.cifar)+"/"+args.netName):
+    os.makedirs('checkpoint/cifar'+str(args.cifar)+"/"+args.netName)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(device)
@@ -93,9 +93,9 @@ except:
 
 net = net.to(device)
 
-if device == 'cuda':
-    net = torch.nn.DataParallel(net)
-    cudnn.benchmark = True
+# if device == 'cuda':
+#     net = torch.nn.DataParallel(net)
+#     cudnn.benchmark = True
 
 if args.resume:
     # Load checkpoint.
@@ -116,26 +116,24 @@ optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5
 def train(epoch):
     step_adjust(optimizer, epoch, args.lr)
     print('\nEpoch: %d   Learning rate: %f' % (epoch+1, optimizer.param_groups[0]['lr']))
+
+    # updating weight
+    net.update_weight(epoch)
+
     net.train()
     train_loss = 0
     correct = 0
     total = 0
 
+
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
+
+
         outputs = net(inputs)
         loss = criterion(outputs, targets)
         loss.backward()
-
-        # if True:
-        #     for parameter in net.parameters():
-        #         # import pdb; pdb.set_trace()
-        #         grad_mean = parameter.grad.abs().mean()
-        #         # grad_median = parameter.grad.abs().median()
-        #         parameter.grad = torch.sign(parameter.grad) * grad_mean
-        #         # import pdb; pdb.set_trace()
-
         optimizer.step()
 
         train_loss += loss.item()
@@ -146,7 +144,7 @@ def train(epoch):
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
             % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
-    file_path='records/normal_cifar_' + str(args.cifar) + '_' + args.netName + '_' + str(args.weight) + '_train.txt'
+    file_path='records/cifar_' + str(args.cifar) + '_' + args.netName + '_' + str(args.weight) + '_train.txt'
     record_str=str(epoch)+'\t'+"%.3f"%(train_loss/(batch_idx+1))+'\t'+"%.3f"%(100.*correct/total)+'\n'
     write_record(file_path,record_str)
     return  [train_loss/(batch_idx+1), 100.*correct/total]
@@ -172,7 +170,7 @@ def test(epoch):
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                 % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
 
-    file_path = 'records/normal_cifar' + str(args.cifar) + '_' + args.netName + '_' + str(args.weight) + '_test.txt'
+    file_path = 'records/cifar_' + str(args.cifar) + '_' + args.netName + '_' + str(args.weight) + '_test.txt'
     record_str = str(epoch) + '\t' + "%.3f" % (test_loss / (batch_idx + 1)) + '\t' + "%.3f" % (
                 100. * correct / total) + '\n'
     write_record(file_path, record_str)
@@ -186,13 +184,13 @@ def test(epoch):
             'acc': acc,
             'epoch': epoch,
         }
-        # save_path = './checkpoint/cifar'+str(args.cifar)+"/"+args.netName+"/"+str(args.weight)+"_model_best.t7"
-        # torch.save(state, save_path)
+        save_path = './checkpoint/cifar'+str(args.cifar)+"/"+args.netName+"/"+str(args.weight)+"_model_best.t7"
+        torch.save(state, save_path)
         best_acc = acc
 
     return [(test_loss / (batch_idx + 1)), (100. * correct / total)]
 
-logfile = './checkpoint/cifar'+str(args.cifar)+"_normal/"+args.netName+"/"+str(args.weight)+".txt"
+logfile = './checkpoint/cifar'+str(args.cifar)+"/"+args.netName+"/"+str(args.weight)+".txt"
 if not os.path.exists(logfile):
     record_str = "Epoch"+'\t'+"Train loss" +'\t'+"Test loss" +'\t'+"Train Acc"+ '\t'+"Test Acc"+'\n'
     write_record(logfile, record_str)
